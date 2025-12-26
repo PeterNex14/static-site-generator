@@ -11,20 +11,22 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(nodes)
             continue
 
-        if nodes.text.count(delimiter) != 2:
-            raise Exception("invalid markdown syntax")
+        split_nodes = []
+        sections = nodes.text.split(delimiter)
+
+        if len(sections) % 2 == 0:
+            raise Exception("Invalid markdown syntax")
         
-        text_split = nodes.text.split(delimiter)
-        
-        for i in range(len(text_split)):
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+
             if i % 2 != 0:
-                new_nodes.append(TextNode(text_split[i], text_type))
+                new_nodes.append(TextNode(sections[i], text_type))
             else:
-                new_nodes.append(TextNode(text_split[i], TextType.TEXT))    
+                new_nodes.append(TextNode(sections[i], TextType.TEXT))  
+
+        new_nodes.extend(split_nodes)
 
     return new_nodes
 
-
-
-node = TextNode("This is a _italic block_ word", TextType.TEXT)
-print(split_nodes_delimiter([node], "_", TextType.ITALIC))
