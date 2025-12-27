@@ -70,7 +70,9 @@ def block_to_html_node(block):
     block_type = block_to_block_type(block)
 
     if block_type == BlockType.PARAGRAPH:
-        children = text_to_children(block)
+        lines = block.split("\n")
+        text = " ".join(lines)
+        children = text_to_children(text)
         return ParentNode("p", children)
 
     
@@ -87,11 +89,43 @@ def block_to_html_node(block):
 
     if block_type == BlockType.CODE:
         lines = block.split("\n")
-        text = "\n".join(lines[1:-1])
+        inner = "\n".join(lines[1:-1])
+        text = inner + "\n"
         code_node = LeafNode("code", text)
         return ParentNode("pre", [code_node])
         
-        
+    if block_type == BlockType.QUOTE:
+        lines = block.split("\n")
+        text = "\n".join([line[2:] for line in lines])
+        children = text_to_children(text)
+        return ParentNode("blockquote", children)
+    
+    if block_type == BlockType.UNORDERED_LIST:
+        lines = block.split("\n")
+        list_item = []
+        for line in lines:
+            if line.startswith("- "):
+                text = line[2:].strip()
+                child = text_to_children(text)
+                list_item.append(ParentNode("li", child))
+            else:
+                break
+        return ParentNode("ul", list_item)
+
+    if block_type == BlockType.ORDERED_LIST:
+        lines = block.split("\n")
+        list_item = []
+        i = 1
+        for line in lines:
+            prefix = f"{i}. "
+            if not line.startswith(prefix):
+                break
+            text = line[len(prefix):].strip()
+            child = text_to_children(text)
+            list_item.append(ParentNode("li", child))
+            i += 1
+        return ParentNode("ol", list_item)
+
 def text_to_children(text):
     children = []
     textnode = text_to_textnodes(text)
@@ -101,17 +135,4 @@ def text_to_children(text):
 
 
 
-
-
-md = """
-```
-def text_to_children(text):
-    children = []
-    textnode = text_to_textnodes(text)
-    for node in textnode:
-        children.append(text_node_to_html(node))
-    return children
-```
-"""
-print(markdown_to_html_node(md))
 
