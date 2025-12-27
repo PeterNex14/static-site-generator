@@ -1,3 +1,7 @@
+from textnode import text_node_to_html
+from split_node_delimiter import text_to_textnodes
+from htmlnode import ParentNode, LeafNode, HTMLNode
+
 import re
 from enum import Enum
 
@@ -51,4 +55,63 @@ def markdown_to_blocks(markdown):
     return new_block
 
 
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    block_nodes = []
+
+    for block in blocks:
+        node = block_to_html_node(block)
+        block_nodes.append(node)
+    
+    return ParentNode("div", block_nodes)
+
+
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
+
+    if block_type == BlockType.PARAGRAPH:
+        children = text_to_children(block)
+        return ParentNode("p", children)
+
+    
+    if block_type == BlockType.HEADING:
+        level = 0
+        for ch in block:
+            if ch == "#":
+                level += 1
+            else:
+                break
+        text = block[level + 1 :].strip()
+        children = text_to_children(text)
+        return ParentNode(f"h{level}", children)
+
+    if block_type == BlockType.CODE:
+        lines = block.split("\n")
+        text = "\n".join(lines[1:-1])
+        code_node = LeafNode("code", text)
+        return ParentNode("pre", [code_node])
+        
+        
+def text_to_children(text):
+    children = []
+    textnode = text_to_textnodes(text)
+    for node in textnode:
+        children.append(text_node_to_html(node))
+    return children
+
+
+
+
+
+md = """
+```
+def text_to_children(text):
+    children = []
+    textnode = text_to_textnodes(text)
+    for node in textnode:
+        children.append(text_node_to_html(node))
+    return children
+```
+"""
+print(markdown_to_html_node(md))
 
