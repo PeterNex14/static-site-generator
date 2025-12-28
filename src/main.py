@@ -1,3 +1,4 @@
+from generate_page import generate_page
 import os
 from io_operation import copy_recursive, delete_directory_dst
 
@@ -10,6 +11,7 @@ def main():
 
     delete_directory_dst(public_path)
     copy_recursive(static_path, public_path)
+    generate_page("content/index.md", "template.html", "public/index.html")
     
 
 
