@@ -2,6 +2,44 @@
 
 This is a custom-built static site generator written in Python. It takes raw Markdown content and converts it into a full HTML website, styling it with CSS and organizing it into a directory structure ready for deployment.
 
+## Usage
+
+### Generating the Site
+
+To build the website, run the following command from the root directory:
+
+```bash
+python3 src/main.py
+```
+
+This will generate the static files in the `docs/` directory.
+
+**Configuration:**
+The generator accepts an optional argument for the `basepath`. If you are hosting on a subdirectory (like GitHub Pages), provide it as an argument:
+
+```bash
+python3 src/main.py "/repo-name/"
+```
+
+### Running Tests
+
+To run the unit tests, use the provided script:
+
+```bash
+./test.sh
+```
+
+### Local Development
+
+To view the generated site locally, you can start a simple HTTP server:
+
+```bash
+cd docs
+python3 -m http.server 8888
+```
+
+Then open your browser to `http://localhost:8888`.
+
 ## Boot.dev Guided Project
 
 This project was built as part of the "Build a Static Site Generator" course on [Boot.dev](https://www.boot.dev). It is a hands-on guided project designed to teach the fundamentals of text processing, recursion, and object-oriented programming in Python.
